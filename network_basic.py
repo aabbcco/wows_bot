@@ -16,15 +16,19 @@ async def PostRequestAsync(dest):
     if res['status'] == 'error':
         raise Exception(res['error']['code'], res['error']['message'])
 
-    return res
+    return res['data']
 
+async def GetShipInfo(server:str,ship_id:str,language='zh-cn'):
+    url = WowsRequestGenerater(server,['encyclopedia','ships'],{"ship_id":ship_id,'language':language})
+    res = await PostRequestAsync(url)
+    return res[ship_id]['name']
 
 async def GetTargetIdByRequest(server: str, field: str, name: str) -> str:
     assert field in ['clans', 'account']
     url = WowsRequestGenerater(server, [field, 'list'], {'search': name})
     res = await PostRequestAsync(url)
     return (
-        res['data'][0]['clan_id'] if field == 'clans' else res['data'][0]['account_id']
+        res[0]['clan_id'] if field == 'clans' else res['data'][0]['account_id']
     )
 
 
@@ -35,7 +39,7 @@ async def GetPersonalInfo(server: str, name: str):
         id = await GetTargetIdByRequest(server, 'account', name)
         id = str(id)
     url = WowsRequestGenerater(server,['account','info'],{'account_id':id})
-    personalinfo = (await PostRequestAsync(url))['data'][id]
+    personalinfo = (await PostRequestAsync(url))[id]
     if personalinfo['hidden_profile']==True:
         raise exception('hidden profile')
     pvp = personalinfo['statistics']['pvp']
@@ -57,7 +61,7 @@ async def GetClanInfo(server: str, name: str):
         id = await GetTargetIdByRequest(server, 'clans', name)
         id = str(id)
     url = WowsRequestGenerater(server, ['clans', 'info'], {'clan_id': id})
-    claninfo = (await PostRequestAsync(url))['data'][id]
+    claninfo = (await PostRequestAsync(url))[id]
 
     return {
         'name': claninfo['name'],
