@@ -4,10 +4,14 @@ from nonebot import on_command,on_keyword,on_startswith
 from nonebot.rule import to_me
 from nonebot.typing import T_State
 from nonebot.adapters.cqhttp import Bot,Event
+from libs.network_basic import GetPersonalInfo
 
 from .config import Config
 
 repeater = on_startswith('快说',rule=to_me(),priority=5)
+
+#basic wows info temporary
+wows_info = on_command('wows',aliases={'窝窝屎'},rule=to_me(),priority=5)
 
 global_config = get_driver().config
 config = Config(**global_config.dict())
@@ -22,7 +26,7 @@ config = Config(**global_config.dict())
 
 @repeater.handle()
 async def setrepter(bot:Bot,event:Event,state:T_State):
-    args = str(event.message).strip()
+    args = str(event.message()).strip()
     if args:
         state['repeat']=args
 
@@ -30,3 +34,12 @@ async def setrepter(bot:Bot,event:Event,state:T_State):
 async def gotrepeat(bot:Bot,event:Event,state:T_State):
     strs = state['repeat'][2:]
     await repeater.finish(strs)
+
+@wows_info.handle()
+async def wows_handler(bot:Bot,event:Event,state:T_State):
+    args = str(event.get_message()).strip()
+    if args:
+        pdict = await GetPersonalInfo(args)
+        res = '姓名:{:}\nid:{:}\n场次:{:}\nkd:{:}\n胜率；{:2f}'.format(args,pdict['account_id'],pdict['battles'],pdict['kd'],pdict['winrate'])
+        await repeater.finish(res)
+        
