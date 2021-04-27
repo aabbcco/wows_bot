@@ -4,6 +4,9 @@ from nonebot import on_command,on_keyword,on_startswith
 from nonebot.rule import to_me
 from nonebot.typing import T_State
 from nonebot.adapters.cqhttp import Bot,Event
+import os
+import sys
+sys.path.append(os.path.dirname(__file__))
 from libs.network_basic import GetPersonalInfo
 
 from .config import Config
@@ -39,7 +42,7 @@ async def gotrepeat(bot:Bot,event:Event,state:T_State):
 async def wows_handler(bot:Bot,event:Event,state:T_State):
     args = str(event.get_message()).strip()
     if args:
-        pdict = await GetPersonalInfo(args)
-        res = '姓名:{:}\nid:{:}\n场次:{:}\nkd:{:}\n胜率；{:2f}'.format(args,pdict['account_id'],pdict['battles'],pdict['kd'],pdict['winrate'])
+        pdict = await GetPersonalInfo('asia',args)
+        res = '姓名:{:}\nid:{:}\n场次:{:}\nkd:{:.2f}\n胜率:{:.2f}'.format(args,pdict['account_id'],pdict['battles'],pdict['kd'],pdict['winrate'])
         await repeater.finish(res)
         
