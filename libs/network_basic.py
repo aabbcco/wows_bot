@@ -18,10 +18,12 @@ async def PostRequestAsync(dest):
 
     return res['data']
 
+
 async def GetShipInfo(server:str,ship_id:str,language='zh-cn'):
     url = WowsRequestGenerater(server,['encyclopedia','ships'],{"ship_id":ship_id,'language':language})
     res = await PostRequestAsync(url)
     return res[ship_id]['name']
+
 
 async def GetTargetIdByRequest(server: str, field: str, name: str) -> str:
     assert field in ['clans', 'account']
@@ -30,6 +32,19 @@ async def GetTargetIdByRequest(server: str, field: str, name: str) -> str:
     return (
         res[0]['clan_id'] if field == 'clans' else res[0]['account_id']
     )
+
+
+async def GetAllMapInfo(server: str):
+    url = WowsRequestGenerater(server, ['encyclopedia', 'battlearenas'], {'language': 'zh-cn'})
+
+    mapinfo = await PostRequestAsync(url)
+    mapdata = {}
+    for key, value in mapinfo['data'].items():
+        mapdata[value['name']] = {'map_id': value['battle_arena_id'],
+                                  'description': value['description'],
+                                  'icon': value['icon']}
+
+    return mapdata
 
 
 async def GetPersonalInfo(server: str, name: str):
