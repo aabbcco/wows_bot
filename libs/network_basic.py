@@ -29,6 +29,7 @@ async def GetTargetIdByRequest(server: str, field: str, name: str) -> str:
     assert field in ['clans', 'account']
     url = WowsRequestGenerater(server, [field, 'list'], {'search': name})
     res = await PostRequestAsync(url)
+
     return (
         res[0]['clan_id'] if field == 'clans' else res[0]['account_id']
     )
