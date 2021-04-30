@@ -33,11 +33,7 @@ async def GetTargetIdByRequest(server: str, field: str, name: str) -> str:
 
 
 async def GetPersonalInfo(server: str, name: str):
-    if name.isdigit():
-        id = name
-    else:
-        id = await GetTargetIdByRequest(server, 'account', name)
-        id = str(id)
+    id = str(await GetTargetIdByRequest(server, 'account', name))
     url = WowsRequestGenerater(server,['account','info'],{'account_id':id})
     personalinfo = (await PostRequestAsync(url))[id]
     if personalinfo['hidden_profile']==True:

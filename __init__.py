@@ -29,7 +29,7 @@ config = Config(**global_config.dict())
 
 @repeater.handle()
 async def setrepter(bot:Bot,event:Event,state:T_State):
-    args = str(event.message()).strip()
+    args = str(event.message).strip()
     if args:
         state['repeat']=args
 
@@ -42,7 +42,10 @@ async def gotrepeat(bot:Bot,event:Event,state:T_State):
 async def wows_handler(bot:Bot,event:Event,state:T_State):
     args = str(event.get_message()).strip()
     if args:
-        pdict = await GetPersonalInfo('asia',args)
+        try:
+            pdict = await GetPersonalInfo('asia',args)
+        except:
+            wows_info.finish('木有找到这个玩家')
         res = '姓名:{:}\nid:{:}\n场次:{:}\nkd:{:.2f}\n胜率:{:.2f}'.format(args,pdict['account_id'],pdict['battles'],pdict['kd'],pdict['winrate'])
-        await repeater.finish(res)
+        await wows_info.finish(res)
         
