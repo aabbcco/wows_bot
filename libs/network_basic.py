@@ -4,7 +4,6 @@ import asyncio
 from nonebot import get_driver
 from pydantic.utils import unique_list
 
-
 async def PostRequestAsync(dest):
     try:
         async with httpx.AsyncClient() as client:
@@ -83,12 +82,14 @@ async def GetClanInfo(server: str, name: str):
         'updated_at': claninfo['updated_at'],
         'leader_name': claninfo['leader_name'],
         'tag': claninfo['tag'],
-        'description': claninfo['description'],
+        #'description': claninfo['description'],
     }
 
 
 # http(s)://<server>/<API_name>/<method block>/<method name>/?<get params>
 def WowsRequestGenerater(server: str, api: list, func: dict) -> str:
+
+    assert(server in ['com','asia','eu','ru']),'server invalid'
 
     url = 'https://api.worldofwarships.{:}/wows/'.format(server)
     for _, key in enumerate(api):

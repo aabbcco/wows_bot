@@ -11,5 +11,8 @@ PlayerParser.add_argument('server')
 PlayerParser.add_argument('name')
 PlayerParser.set_defaults(handle = handle_player)
 
-
+ClanParser = wowSubParserList.add_parser('clan',help='clan info')
+ClanParser.add_argument('server')
+ClanParser.add_argument('clan')
+ClanParser.set_defaults(handle = handle_clan)
 

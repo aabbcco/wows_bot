@@ -8,9 +8,10 @@ from nonebot.adapters.cqhttp import Bot,Event
 import sys
 import os
 sys.path.append(os.path.dirname(__file__))
-from libs.network_basic import GetPersonalInfo
+from libs.network_basic import GetClanInfo, GetPersonalInfo
 from libs.parser import wowsParser
 from .config import Config
+from libs.server_mapping import server_map
 
 repeater = on_startswith('快说',rule=to_me(),priority=5)
 
@@ -45,10 +46,19 @@ async def wows_t_handler(bot:Bot,event:Event,state:T_State):
     args = state['args']
     if args.subname=='player':
         try:
-            pdict = await GetPersonalInfo(args.server,args.name)
+            pdict = await GetPersonalInfo(server_map[args.server],args.name)
         except:
             wowsinfo.finish('木有找到这个玩家')
-        res = '姓名:{:}\nid:{:}\n场次:{:}\nkd:{:.2f}\n胜率:{:.2f}'.format(args.name,pdict['account_id'],pdict['battles'],pdict['kd'],pdict['winrate'])
-        await repeater.finish(res)
+        res = '姓名:{:}\nid:{:}\n场次:{:}\nkd:{:.2f}\n胜率:{:.2f}%'.format(args.name,pdict['account_id'],pdict['battles'],pdict['kd'],pdict['winrate']*100)
+        await wowsinfo.finish(res)
+    elif args.subname=='clan':
+        try:
+            claninfo = await GetClanInfo(server_map[args.server],args.clan)
+        except:
+            wowsinfo.finish('没有找到这个军团')
+        res = ''
+        for key in claninfo.keys():
+            res+=('{:}:{:}\n'.format(key,claninfo[key]))
+        await wowsinfo.finish(res)
     else:
         wowsinfo.finish("啊，我被主人玩坏了")
